@@ -1,15 +1,22 @@
 {
-  "name": "Fase2",
+  "name": "fase2",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon --watch src src/index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "mongodb": "^3.5.4"
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "mongodb": "^3.5.4",
+    "mongoose": "^5.9.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
   }
 }
