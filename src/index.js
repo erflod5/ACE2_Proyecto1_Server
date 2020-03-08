@@ -17,7 +17,7 @@ app.use(express.urlencoded({extended:false}));
 require('./db/connection');
 const Record = require('./db/record');
 
-const record = new Record({    
+var record = new Record({    
     steps : 0,
     BPM : 89,
     weight : 10.3,
@@ -46,8 +46,16 @@ app.get('/api/Record',(req,res)=>{
 });
 
 app.post('/api/Record',(req,res)=>{
-    console.log(req.body);
-    res.send({status : true});
+    record = new Record(req.body);
+    console.log(record);
+    record.save((err,rec)=>{
+        if(err){
+            res.send({status : false});
+            throw err;
+        }
+        console.log(rec);
+        res.send({status : true});
+    });
 })
 
 //Server
