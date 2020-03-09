@@ -47,7 +47,6 @@ app.get("/api/Record", (req, res) => {
 
 app.post("/api/Record", (req, res) => {
   record = new Record(req.body);
-  console.log(record);
   record.save((err, rec) => {
     if (err) {
       res.send({ status: false });
@@ -58,24 +57,10 @@ app.post("/api/Record", (req, res) => {
   });
 });
 
-//Server
-var server = app.listen(app.get("port"), () => {
-  console.log("Servidor corriento en el puerto: " + app.get("port"));
-});
-
-/*//Pasos por hora, dia, semana
-Record.find({"date" : {"$gte" : start, "$lte" : end}})
-    .select('date steps')
-    .exec((err,records)=>{
-    if(err)
-        throw err;
-    console.log(records);
-});
-*/
-var start = new Date('2020-03-03:00:00Z');
-var end = new Date('2020-03-20T23:59:59Z');
-
-function pasosFiltro(start, end,filtro){
+app.get('/api/Steps',(req, res)=>{
+  let start = new Date(req.query.start);
+  let end = new Date(req.query.end);
+  let filtro = req.query.format;
   Record.aggregate(
     [
       {
@@ -93,13 +78,15 @@ function pasosFiltro(start, end,filtro){
         $sort: { _id: 1 }
       }
     ],
-    (err, res) => {
+    (err, rec) => {
       if (err) throw err;
-      console.log(res);
+      console.log(rec);
+      res.send(rec);
     }
   );
-}
+});
 
-pasosFiltro(start,end,'%Y-%m-%d');
-
-pasosFiltro(start,end,'%Y-%m-%d %H');
+//Server
+var server = app.listen(app.get("port"), () => {
+  console.log("Servidor corriento en el puerto: " + app.get("port"));
+});
