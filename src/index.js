@@ -92,8 +92,20 @@ app.get('/api/Steps',(req, res)=>{
   );
 });
 
-app.get('/api/AntiRrobo',(req, res)=>{
-  res.send({status : true});
+//Socket
+socket.on('connection', function (ws, req) {
+  ws.on('message', function (message) {
+    console.log("Received: " + message);
+    s.clients.forEach(function (client) {
+      if (client != ws && client.readyState) {
+        client.send(message); 
+      }
+    });
+  });
+  ws.on('close', function () {
+    console.log("lost one client");
+  });
+  console.log("new client connected");
 });
 
 server.listen(app.get('port'),()=>{
