@@ -1,9 +1,14 @@
 //Librerias, Modulos y Paquetes
 const express = require("express");
 const cors = require("cors");
+const http = require('http');
 
 //Inicializaciones
 const app = express();
+const server = http.createServer(app);
+
+const WebSocket = require('ws');
+const socket = new WebSocket.Server({server});
 
 //Configuraciones
 app.set("port", 3000 || process.env.PORT);
@@ -57,6 +62,7 @@ app.post("/api/Record", (req, res) => {
   });
 });
 
+//?start=2020-03-03&end=2020-03-20&format=%Y-%m-%d:%H
 app.get('/api/Steps',(req, res)=>{
   let start = new Date(req.query.start);
   let end = new Date(req.query.end);
@@ -86,7 +92,22 @@ app.get('/api/Steps',(req, res)=>{
   );
 });
 
-//Server
-var server = app.listen(app.get("port"), () => {
+//Socket
+socket.on('connection', function (ws, req) {
+  ws.on('message', function (message) {
+    console.log("Received: " + message);
+    s.clients.forEach(function (client) {
+      if (client != ws && client.readyState) {
+        client.send(message); 
+      }
+    });
+  });
+  ws.on('close', function () {
+    console.log("lost one client");
+  });
+  console.log("new client connected");
+});
+
+server.listen(app.get('port'),()=>{
   console.log("Servidor corriento en el puerto: " + app.get("port"));
 });
