@@ -21,6 +21,7 @@ app.use(express.urlencoded({ extended: false }));
 //DataBase
 require("./db/connection");
 const Record = require("./db/record");
+const Report = require('./db/report');
 
 var record = new Record({
   steps: 100,
@@ -31,6 +32,15 @@ var record = new Record({
   soundIntensity: 100,
   date: new Date("2020-03-03:10:40Z"),
   water: 900,
+  location: {
+    latitude: 14.607815,
+    longitude: -90.55173,
+    height: 1505
+  }
+});
+
+var report = new Report({
+  date: new Date(),
   location: {
     latitude: 14.607815,
     longitude: -90.55173,
@@ -64,9 +74,16 @@ app.post("/api/Record", (req, res) => {
 
 //?start=2020-03-03&end=2020-03-20&format=%Y-%m-%d:%H
 app.get('/api/Steps',(req, res)=>{
-  let start = new Date(req.query.start);
-  let end = new Date(req.query.end);
-  let filtro = req.query.format;
+  let start = new Date(0);
+  let end = new Date();
+  let filtro = '%Y-%m-%d';
+
+  if(req.query.start)
+    start = new Date(req.query.start);
+  if(req.query.end)
+    end = new Date(req.query.end);
+  if(req.query.filtro)
+    filtro = req.query.format;
   Record.aggregate(
     [
       {
@@ -92,13 +109,40 @@ app.get('/api/Steps',(req, res)=>{
   );
 });
 
+app.post('/api/modoRobo',(req,res) => {
+  console.log(req.body);
+  res.send({status : true});
+});
+
+app.post('/api/Report',(req,res)=>{
+  report = new Report(req.body);
+  report.save((err,rep)=>{
+    if (err) {
+      res.send({ status: false });
+      throw err;
+    }
+    res.send({ status: true });
+  })
+});
+
+app.get('/api/Report',(req,res)=>{
+  Report.find({}, (err, reports) => {
+    var reportmap = {};
+    if (err) throw err;
+    reports.forEach(report => {
+      reportmap[report._id] = report;
+    });
+    res.send(reportmap);
+  });
+});
+
 //Socket
 socket.on('connection', function (ws, req) {
   ws.on('message', function (message) {
     console.log("Received: " + message);
     s.clients.forEach(function (client) {
       if (client != ws && client.readyState) {
-        client.send(message); 
+        client.send(message);
       }
     });
   });
