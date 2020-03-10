@@ -114,7 +114,8 @@ app.get('/api/Steps',(req, res)=>{
   if(req.query.end)
     end = new Date(req.query.end);
   if(req.query.filtro)
-    filtro = req.query.format;
+    filtro = req.query.filtro;
+    
   Record.aggregate(
     [
       {
