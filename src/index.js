@@ -64,9 +64,17 @@ app.post("/api/Record", (req, res) => {
 
 //?start=2020-03-03&end=2020-03-20&format=%Y-%m-%d:%H
 app.get('/api/Steps',(req, res)=>{
-  let start = new Date(req.query.start);
-  let end = new Date(req.query.end);
-  let filtro = req.query.format;
+  let start = new Date(0);
+  let end = new Date();
+  let filtro = '%Y-%m-%d';
+
+  if(req.query.start)
+    start = new Date(req.query.start);
+  if(req.query.end)
+    end = new Date(req.query.end);
+  if(req.query.filtro)
+    filtro = req.query.format;
+  console.log(end);
   Record.aggregate(
     [
       {
@@ -92,13 +100,18 @@ app.get('/api/Steps',(req, res)=>{
   );
 });
 
+app.post('/api/modoRobo',(req,res) => {
+  console.log(req.body);
+  res.send({status : true});
+});
+
 //Socket
 socket.on('connection', function (ws, req) {
   ws.on('message', function (message) {
     console.log("Received: " + message);
     s.clients.forEach(function (client) {
       if (client != ws && client.readyState) {
-        client.send(message); 
+        client.send(message);
       }
     });
   });
