@@ -62,6 +62,7 @@ app.get("/api/Record", (req, res) => {
 
 app.post("/api/Record", (req, res) => {
   record = new Record(req.body);
+  record.date = new Date(Date.now() - 6*60*60*1000);
   record.save((err, rec) => {
     if (err) {
       res.send({ status: false });
@@ -146,6 +147,7 @@ app.post('/api/modoRobo',(req,res) => {
 
 app.post('/api/Report',(req,res)=>{
   report = new Report(req.body);
+  report.date = new Date(Date.now() - 6*60*60*1000);
   report.save((err,rep)=>{
     if (err) {
       res.send({ status: false });
