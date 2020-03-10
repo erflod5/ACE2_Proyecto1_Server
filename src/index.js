@@ -72,6 +72,37 @@ app.post("/api/Record", (req, res) => {
   });
 });
 
+app.get('/api/Record/average',(req, res)=>{
+  var scale = require('scale-number-range');
+  Record.aggregate(
+    [
+      {
+        $group: {
+          _id: '1',
+          steps: { $avg: "$steps"},
+          BPM: { $avg: "$BPM" },
+          weight : { $avg: "$weight" },
+          position : { $avg: "$position" },
+          luminousIntensity: { $avg: "$luminousIntensity" },
+          soundIntensity: { $avg: "$soundIntensity" },
+          water: { $avg: "$water"}
+        }
+      },
+      {
+        $sort: { _id: 1 }
+      }
+    ],
+    (err,rec)=>{
+      if (err) throw err;
+      rec[0].luminousIntensity = scale(rec[0].luminousIntensity,0,16000,0,100);
+      rec[0].soundIntensity = scale(rec[0].soundIntensity,0,1500,0,100);
+      rec[0].water = scale(rec[0].water,0,1100,0,100);
+      console.log(rec);
+      res.send(rec);
+    }
+  );
+});
+
 //?start=2020-03-03&end=2020-03-20&format=%Y-%m-%d:%H
 app.get('/api/Steps',(req, res)=>{
   let start = new Date(0);
@@ -92,9 +123,7 @@ app.get('/api/Steps',(req, res)=>{
       {
         $group: {
           _id: { $dateToString: { format: filtro, date: "$date" } },
-          totalStep: {
-            $sum: "$steps"
-          },
+          totalStep: { $sum: "$steps" }
         }
       },
       {

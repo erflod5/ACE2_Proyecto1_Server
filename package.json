@@ -15,6 +15,7 @@
     "express": "^4.17.1",
     "mongodb": "^3.5.4",
     "mongoose": "^5.9.3",
+    "scale-number-range": "^1.0.3",
     "ws": "^7.2.3"
   },
   "devDependencies": {
