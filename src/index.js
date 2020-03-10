@@ -114,19 +114,18 @@ app.post('/api/modoRobo',(req,res) => {
   res.send({status : true});
 });
 
-app.post('api/Report',(req,res)=>{
+app.post('/api/Report',(req,res)=>{
   report = new Report(req.body);
   report.save((err,rep)=>{
     if (err) {
       res.send({ status: false });
       throw err;
     }
-    console.log(rep);
     res.send({ status: true });
   })
 });
 
-app.get('api/Report',(req,res)=>{
+app.get('/api/Report',(req,res)=>{
   Report.find({}, (err, reports) => {
     var reportmap = {};
     if (err) throw err;
