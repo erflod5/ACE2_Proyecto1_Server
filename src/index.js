@@ -171,8 +171,9 @@ app.get('/api/Report',(req,res)=>{
 //Socket
 socket.on('connection', function (ws, req) {
   ws.on('message', function (message) {
-    console.log("Received: " + message);
-    if(message.charAt(0) != 'D'){
+    var json = JSON.parse(message);
+    console.log(json);
+    if(!json.Data){
       var data = message.split('#');
       report = new Report({
         location: {
@@ -188,9 +189,15 @@ socket.on('connection', function (ws, req) {
         }
         console.log('Error en post report');
       });
-      message = {alarma : true};
+      message = '{"alarma" : true}';
     }
-    s.clients.forEach(function (client) {
+    else{
+      if(json.Data)
+        message = 'A';
+      else
+        message = 'B';
+    }
+    socket.clients.forEach(function (client) {
       if (client != ws && client.readyState) {
         client.send(message);
       }
