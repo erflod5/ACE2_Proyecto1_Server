@@ -172,6 +172,19 @@ app.get('/api/Report',(req,res)=>{
 socket.on('connection', function (ws, req) {
   ws.on('message', function (message) {
     console.log("Received: " + message);
+    if(message.charAt(0) == 'D'){
+      message = {alarma : true};
+    }
+    else{
+      var data = message.split('#');
+      report = new Report({
+        location: {
+          latitude: data[0],
+          longitude: data[1],
+          height: data[2]
+        }
+      });
+    }
     s.clients.forEach(function (client) {
       if (client != ws && client.readyState) {
         client.send(message);
