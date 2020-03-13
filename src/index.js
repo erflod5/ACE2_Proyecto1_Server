@@ -171,23 +171,30 @@ app.get('/api/Report',(req,res)=>{
 //Socket
 socket.on('connection', function (ws, req) {
   ws.on('message', function (message) {
-    var json = JSON.parse(message);
-    console.log(json);
-    if(!json.Data){
+    var json = 0;
+    try{
+	json = JSON.parse(message);
+    }
+    catch(e){
+        json = 0;
+    }
+    if(json === 0){
       var data = message.split('#');
+      console.log(data);
       report = new Report({
         location: {
-          latitude: data[0],
-          longitude: data[1],
-          height: data[2]
+          latitude: Number.parseFloat(data[0]),
+          longitude: Number.parseFloat(data[1]),
+          height: Number.parseFloat(data[2])
         }
       });
       report.date = new Date(Date.now() - 6*60*60*1000);
+      console.log(report);
       report.save((err,rep)=>{
         if (err) {
           throw err;
         }
-        console.log('Error en post report');
+        console.log('Reporte guardado');
       });
       message = '{"alarma" : true}';
     }
